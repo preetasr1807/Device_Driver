@@ -1,0 +1,22 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<fcntl.h>
+#include<string.h>
+#include<sys/types.h>
+#include<unistd.h>
+int main(int argc,char* argv[])
+{
+	int fd,ret,rfd,new_pos;
+	char buffer[]="aiwen chaki asla mandir firdiii,hikk vich goli soorma hi marda,pind ch na awe din kato vair de soorme o jake maro goli dyer de ,ghr dea chulea ch ghaa ugde jail jake le awin tu pta yaar da burrrrrhaaaaaa";
+	fd=open("kams",O_WRONLY);
+	if(fd<0)
+	{
+		perror("fd not found");
+		exit(-1);	
+	}
+	printf("fd=%d\n",fd);
+	ret=write(fd,buffer,strlen(buffer));
+	printf("count=%d\n",ret);
+	close(fd);
+return 0;
+}

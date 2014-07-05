@@ -1,0 +1,8 @@
+#! /bin/bash
+co -l init.c
+co -l cleanup.c
+co -l open.c
+co -l scull_write.c
+co -l release.c
+co -l header.h
+co -l decleration.h

@@ -1,0 +1,161 @@
+head	1.2;
+access;
+symbols;
+locks
+	root:1.2; strict;
+comment	@ * @;
+
+
+1.2
+date	2014.07.04.12.38.48;	author root;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2014.06.30.07.26.47;	author root;	state Exp;
+branches;
+next	;
+
+
+desc
+@implented read operation successfully
+@
+
+
+1.2
+log
+@implemented reader operation using semaphores.
+@
+text
+@#include"header.h"
+#include"declarations.c"
+
+ssize_t scullread(struct file *filep,char __user *buff, size_t size, loff_t *loff)
+{
+	int noctr=0,nocsr=0,j=0,disp=0,nosqs,noq,quantum_size,qset_size;
+	struct SCULL_DEV *lscull_dev;
+	struct SCULL_QSET *lscull_qset;
+	lscull_dev=filep->private_data;
+	size=lscull_dev->data_size;
+	printk(KERN_INFO"********size=%d\n",(int)size);
+	/*nocsr=lscull_dev->rsize;
+	printk(KERN_INFO"********nocsr=%d\n",nocsr);
+	size=size+nocsr;
+	printk(KERN_INFO"********size=%d\n",(int)size);*/
+	lscull_qset=lscull_dev->scull_qset;
+	quantum_size=8;
+	qset_size=8;
+	
+
+	nosqs= size/(quantum_size * qset_size);
+	if(size%(quantum_size * qset_size))
+	{
+		nosqs++;
+	}
+	printk(KERN_INFO"noqset=%d\n",nosqs);
+	noq=size/quantum_size;
+	if(size%quantum_size)
+	{
+		noq++;
+	}
+	printk(KERN_INFO"noq=%d\n",noq);
+
+	noctr=size;
+	printk(KERN_INFO"NOCTR=%d\n",noctr);
+	j=(int)*loff/quantum_size;
+	disp=(int)*loff%quantum_size;
+	if((int)*loff%quantum_size)
+		j++;
+		noq=noq-j;
+		if(j>0)
+		j--;
+		down(&lscull_dev->sem);
+	printk(KERN_INFO"kamal\n");
+	if(lscull_qset)
+	while(j<=quantum_size && lscull_qset->next != NULL)
+	{
+	printk(KERN_INFO"kamal singh\n");
+		if(noq==0)
+		{
+			break;
+		}
+		if(j>7)
+		{
+			lscull_qset=lscull_qset->next;
+			j=0;
+		}
+		if(noctr>quantum_size)
+		{
+			noctr=quantum_size;
+		}
+		noq--;
+		
+		if(lscull_qset->data[j])
+		{
+			copy_to_user(buff+nocsr,lscull_qset->data[j]+disp,noctr-disp);
+			printk(KERN_INFO"NOCTR=%d\n",noctr-disp);
+			printk(KERN_INFO"lscull_qset->data[%d]=%s\n",j,(char*)lscull_qset->data[j]+disp);
+
+		}
+		j++;
+
+		*loff=nocsr=nocsr+noctr-disp;
+		noctr=size-nocsr;
+
+		disp=0;
+		printk(KERN_INFO"buff=%s\n",buff);
+	}	
+		up(&lscull_dev->sem);
+	/*lscull_dev->rsize=nocsr;
+	printk(KERN_INFO"********rsize=%d\n",(int)lscull_dev->rsize);*/
+	return nocsr;
+}
+
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d6 1
+a6 2
+	int noctr=0,nocsr=0,i,nosqs,noq,quantum_size,qset_size;
+	int done=0;
+d10 6
+a15 1
+	printk(KERN_INFO"size=%d\n",(int)size);
+d19 2
+a20 2
+	//if(lscull_qset)
+	//{
+d36 11
+a46 1
+	for(i=0;i<=quantum_size;i++)
+d48 1
+a48 1
+		done++;
+d53 1
+a53 1
+		if(i>7)
+d56 1
+a56 1
+			i=0;
+d60 1
+a60 1
+		noctr=quantum_size;
+d63 6
+d70 2
+a71 2
+		copy_to_user(buff+nocsr,lscull_qset->data[i]+,noctr);
+		printk(KERN_INFO"lscull_qset->data[%d]=%s\n",i,(char*)lscull_qset->data[i]);
+d73 1
+a73 1
+		*loff=nocsr=nocsr+noctr;
+d75 3
+d79 4
+a82 2
+	printk(KERN_INFO"loff=%d\n",(int)*loff);
+	return 0;
+@

@@ -1,0 +1,28 @@
+head	1.1;
+access;
+symbols;
+locks
+	root:1.1; strict;
+comment	@ * @;
+
+
+1.1
+date	2014.05.06.13.19.44;	author root;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@extern int nod; 
+//extern struct file_operations *f_ops; 
+extern struct SCULL_DEV *scull_dev; 
+extern dev_t dev,newdev;
+@
